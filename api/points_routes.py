@@ -1,29 +1,35 @@
-from flask import Blueprint, request
-
+from flask import Blueprint, request, jsonify
+from datetime import datetime
 
 points_routes = Blueprint("points_routes", __name__)
 
 transactions = []
+payerBalances = {}
 
 
 @points_routes.route("/")
 def all_payer_balances():
-    payerInfo = {}
     for transaction in transactions:
         payer = transaction["payer"]
-        if payer not in payerInfo:
-            payerInfo[payer] = transaction["points"]
+        if payer not in payerBalances:
+            payerBalances[payer] = transaction["points"]
         else:
-            payerInfo[payer] += transaction["points"]
-    return payerInfo
+            payerBalances[payer] += transaction["points"]
+    return jsonify(payerBalances)
 
 
 @points_routes.route("/new-transaction", methods=["POST"])
 def new_transaction():
     transaction = {
         "payer": request.json["payer"],
-        "payee": request.json["payee"],
         "points": request.json["points"],
+        "timestamp": datetime.strptime(request.json["timestamp"], "%Y-%m-%dT%H:%M:%SZ"),
     }
     transactions.append(transaction)
-    return transaction
+    transactions.sort(key=lambda x: x["timestamp"])
+    return jsonify(transaction)
+
+
+@points_routes.route("/spend-points", methods=["PUT"])
+def spend_points():
+    points = request.json["points"]
