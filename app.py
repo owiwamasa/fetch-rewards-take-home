@@ -1,4 +1,5 @@
-from flask import flask
+from flask import Flask
+from api.points_routes import points_routes
 
 
 app = Flask(__name__)
