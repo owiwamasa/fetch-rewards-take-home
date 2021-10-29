@@ -47,6 +47,7 @@ def spend_points():
             else:
                 payer_difference[transaction["payer"]] = points
             points = 0
+            break
         else:
             if transaction["points"] < 0:
                 payer_difference[transaction["payer"]] += transaction["points"]
@@ -57,7 +58,7 @@ def spend_points():
             points -= transaction["points"]
 
     if points > 0:
-        return jsonify({"error": "Not enough points"})
+        return "Error: Not enough points to process this request"
 
     for payer in payer_difference:
         spent_points.append(
