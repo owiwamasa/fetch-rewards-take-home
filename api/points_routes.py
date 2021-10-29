@@ -66,4 +66,4 @@ def spend_points():
         payerBalances[payer] -= payer_difference[payer]
 
     json_reponse = json.dumps(spent_points)
-    return json_reponse
+    return spent_points
